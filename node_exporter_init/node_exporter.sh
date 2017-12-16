@@ -14,3 +14,4 @@ EOF
 cp node_exporter_init  /etc/init.d/node_exporter
 chmod +x /etc/init.d/node_exporter
 update-rc.d node_exporter defaults
+

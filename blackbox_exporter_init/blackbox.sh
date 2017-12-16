@@ -14,5 +14,6 @@ OPTIONS"--config.file='/etc/blackbox_exporter/blackbox_exporter.yml'"
 EOF
 
 cp blackbox_exporter_init  /etc/init.d/blackbox_exporter
+chmod +x /etc/init.d/blackbox_exporter
 update-rc.d blackbox_exporter defaults
 setcap cap_net_raw+ep /usr/local/bin/blackbox_exporter
