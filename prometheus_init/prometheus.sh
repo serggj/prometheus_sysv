@@ -17,4 +17,5 @@ OPTIONS="--config.file /etc/prometheus/prometheus.yml \
 EOF
 
 cp prometheus_init  /etc/init.d/prometheus
+chmod +x /etc/init.d/prometheus
 update-rc.d prometheus defaults
