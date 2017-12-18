@@ -1,0 +1,8 @@
+ALERT UnableToPing 
+  IF probe_success {job="ping_checks"} == 0 
+  FOR 1m 
+  LABELS { severity = "critical" } 
+  ANNOTATIONS { 
+    summary = "Unable to ping {{ $labels.instance  }}", 
+    description = "Ping  for {{ $labels.instance }} failed more than 1 minute.", 
+  } 

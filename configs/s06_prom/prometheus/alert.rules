@@ -1,0 +1,71 @@
+#Alert for any instance that is unreachable for >5 minutes.
+ALERT InstanceDown
+  IF up { job !~ "mongodb_exporter" } == 0
+  FOR 5m
+  LABELS { severity = "critical" }
+  ANNOTATIONS {
+    summary = "Instance {{ $labels.instance  }} down",
+    description = "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 minutes.",
+  }
+
+
+ALERT LowDiskSpaceCritical
+  IF
+      node_filesystem_avail{job="node", fstype=~"(ext.|xfs)"}
+    /
+      node_filesystem_size{job="node", fstype=~"(ext.|xfs)"}
+    * 100 <= 10
+  FOR 5m
+  LABELS { severity = "critical" }
+  ANNOTATIONS {
+    description = "Really low disk space left on {{ $labels.mountpoint }} on {{ $labels.fqdn }}: {{ $value | humanize }}%",
+    title = "Really low disk space ",
+  }
+
+ALERT LowDiskSpaceWarning
+  IF
+      node_filesystem_avail{job="node", fstype=~"(ext.|xfs)"}
+    /
+      node_filesystem_size{job="node", fstype=~"(ext.|xfs)"}
+    * 100 <= 20
+  FOR 5m
+  LABELS { severity = "warning" }
+  ANNOTATIONS {
+    description = "Really low disk space left on {{ $labels.mountpoint }} on {{ $labels.fqdn }}: {{ $value | humanize }}%",
+    title = "Really low disk space ",
+  }
+
+ALERT NoDiskSpace
+  IF
+      node_filesystem_avail{job="node", fstype=~"(ext.|xfs)"}
+    /
+      node_filesystem_size{job="node", fstype=~"(ext.|xfs)"}
+    * 100 <= 1
+  FOR 5m
+  LABELS { severity = "critical", pager="pagerduty" }
+  ANNOTATIONS {
+    description = "No disk space left on {{ $labels.mountpoint }} on {{ $labels.fqdn }}: {{ $value | humanize }}%",
+    title = "There's only 1% disk space left on host {{ $labels.fqdn }}",
+  }
+
+ALERT HighInodeUsage
+  IF
+      node_filesystem_files_free{job="node", fstype=~"(ext.|xfs)"}
+    /
+      node_filesystem_files{job="node", fstype=~"(ext.|xfs)"}
+    * 100 <= 20
+  FOR 5m
+  LABELS { severity = "critical" }
+  ANNOTATIONS {
+    description = "Free inodes on {{ $labels.fqdn }} on mountpoint {{ $labels.mountpoint }} is at {{ $value | printf \"%.2f\" }}%",
+    title = "HighInodeUsage"
+  }
+
+ALERT HighCPU
+   IF ((sum(node_cpu{mode=~"user|nice|system|irq|softirq|steal|idle|iowait"}) by (instance, job)) - ( sum(node_cpu{mode=~"idle|iowait"}) by (instance,job) )   )   /  (sum(node_cpu{mode=~"user|nice|system|irq|softirq|steal|idle|iowait"}) by (instance, job)) * 100 > 95
+   FOR 10m
+   LABELS { service = "backend", severity = "critical" }
+   ANNOTATIONS {
+     summary = "High CPU Usage",
+     description = "machine {{ $labels.instance  }}  has really high CPU usage for over 10m",
+  }

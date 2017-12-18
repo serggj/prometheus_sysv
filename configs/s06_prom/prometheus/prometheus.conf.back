@@ -1,0 +1,6 @@
+OPTIONS="-config.file /etc/prometheus/prometheus.yml \
+    -storage.local.path /var/lib/prometheus/ \
+    -web.external-url http://test-mon.smtdpcloud.tk \
+    -web.console.templates /etc/prometheus/consoles \
+    -web.console.libraries /etc/prometheus/console_libraries \
+    -storage.local.checkpoint-interval 10m"

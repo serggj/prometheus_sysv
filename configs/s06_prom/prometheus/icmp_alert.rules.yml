@@ -1,0 +1,11 @@
+groups:
+- name: /etc/prometheus/icmp_alert.rules
+  rules:
+  - alert: UnableToPing
+    expr: probe_success{job="ping_checks"} == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      description: Ping  for {{ $labels.instance }} failed more than 1 minute.
+      summary: Unable to ping {{ $labels.instance  }}

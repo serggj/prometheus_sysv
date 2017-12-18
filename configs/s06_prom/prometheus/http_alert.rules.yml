@@ -1,0 +1,11 @@
+groups:
+- name: /etc/prometheus/http_alert.rules
+  rules:
+  - alert: InvalidRespCode
+    expr: probe_http_status_code != 200
+    for: 10m
+    labels:
+      severity: critical
+    annotations:
+      description: check resp code for {{ $labels.instance }} failed more than 1 minute.
+      summary: '{{ $labels.instance  }} resp code = {{$value}}'

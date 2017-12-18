@@ -1,0 +1,20 @@
+groups:
+- name: /etc/prometheus/haproxy_alert.rules.yml
+  rules:
+  - alert: HaproxyServerDown
+    expr: haproxy_server_up == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      description: Haproxy {{ $labels.instance }} backend {{ $labels.backend }} server {{ $labels.server }} has been down more 1m.
+      summary: '{{ $labels.instance }} {{ $labels.backend }}/{{ $labels.server }} has been down 1m'
+
+  - alert: HaproxyBackendDown
+    expr: haproxy_backend_up == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      description: Haproxy {{ $labels.instance }} backend {{ $labels.backend }} has been down more 1m.
+      summary: '{{ $labels.instance }} {{ $labels.backend }} has been down 1m'

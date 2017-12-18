@@ -1,0 +1,66 @@
+groups:
+- name: /etc/prometheus/alert.rules
+  rules:
+  - alert: InstanceDown
+    expr: up{job!~"mongodb_exporter"} == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      description: '{{ $labels.instance }} of job {{ $labels.job }} has been down
+        for more than 5 minutes.'
+      summary: Instance {{ $labels.instance  }} down
+  - alert: LowDiskSpace
+    expr: node_filesystem_avail{fstype=~"(ext.|xfs)",job="node"} / node_filesystem_size{fstype=~"(ext.|xfs)",job="node"}
+      * 100 <= 10
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      description: 'Really low disk space left on {{ $labels.mountpoint }} on {{ $labels.fqdn
+        }}: {{ $value | humanize }}%'
+      summary: 'Really low disk space critical'
+  - alert: LowDiskSpace
+    expr: node_filesystem_avail{fstype=~"(ext.|xfs)",job="node"} / node_filesystem_size{fstype=~"(ext.|xfs)",job="node"}
+      * 100 <= 20
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      description: 'Really low disk space left on {{ $labels.mountpoint }} on {{ $labels.fqdn
+        }}: {{ $value | humanize }}%'
+      summary: 'Really low disk space warning'
+  - alert: NoDiskSpace
+    expr: node_filesystem_avail{fstype=~"(ext.|xfs)",job="node"} / node_filesystem_size{fstype=~"(ext.|xfs)",job="node"}
+      * 100 <= 1
+    for: 5m
+    labels:
+      pager: pagerduty
+      severity: critical
+    annotations:
+      description: 'No disk space left on {{ $labels.mountpoint }} on {{ $labels.fqdn
+        }}: {{ $value | humanize }}%'
+      summary: There's only 1% disk space left on host {{ $labels.fqdn }}
+  - alert: HighInodeUsage
+    expr: node_filesystem_files_free{fstype=~"(ext.|xfs)",job="node"} / node_filesystem_files{fstype=~"(ext.|xfs)",job="node"}
+      * 100 <= 20
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      description: Free inodes on {{ $labels.fqdn }} on mountpoint {{ $labels.mountpoint
+        }} is at {{ $value | printf "%.2f" }}%
+      summary: HighInodeUsage
+  - alert: HighCPU
+    expr: ((sum(node_cpu{mode=~"user|nice|system|irq|softirq|steal|idle|iowait"})
+      BY (instance, job)) - (sum(node_cpu{mode=~"idle|iowait"}) BY (instance, job)))
+      / (sum(node_cpu{mode=~"user|nice|system|irq|softirq|steal|idle|iowait"}) BY
+      (instance, job)) * 100 > 95
+    for: 10m
+    labels:
+      service: backend
+      severity: critical
+    annotations:
+      description: machine {{ $labels.instance  }}  has really high CPU usage for
+        over 10m
+      summary: High CPU Usage
