@@ -34,25 +34,14 @@ scrape_configs:
     static_configs:
       - targets:
         - 'localhost:9100'
-        - 's06.smtdpcloud.tk:9100'
-        - 'mongo-02-ru.smtdpcloud.tk:9100'
-        - 'cluster-02-bigstorage-de.smtdpcloud.tk:9100'
-        - 'cluster-02-haproxy-de.smtdpcloud.tk:9100'
-        - 'cluster-02-java-01-de.smtdpcloud.tk:9100'
-        - 'cluster-02-java-02-de.smtdpcloud.tk:9100'
-        - 'cluster-02-mongo-01-de.smtdpcloud.tk:9100'
-        - 'cluster-02-mongo-02-de.smtdpcloud.tk:9100'
-        - 'cluster-02-mongo-03-de.smtdpcloud.tk:9100'
-        - 'mongo-02-ru.smtdpcloud.tk:9100'
-        - 'mongo-03-ru.smtdpcloud.tk:9100'
-
+ 
   - job_name: 'haproxy'
     scrape_interval: 30s
     static_configs:
       - labels:
           alias: loadbalancer
       - targets:
-        - 'cluster-02-haproxy-de.smtdpcloud.tk:9101'
+        - 'test:9101'
 
   - job_name: 'graphite'
     scrape_interval: 30s
@@ -65,11 +54,7 @@ scrape_configs:
     scrape_interval: 30s
     static_configs:
       - targets:
-        - 'cluster-02-mongo-01-de.smtdpcloud.tk:9001'
-        - 'cluster-02-mongo-02-de.smtdpcloud.tk:9001'
-        - 'cluster-02-mongo-03-de.smtdpcloud.tk:9001'
-        - 'mongo-02-ru.smtdpcloud.tk:9001'
-        - 'mongo-03-ru.smtdpcloud.tk:9001'
+        - 'mongo:9001'
 
 #  - job_name: 'http_checks'
 #    scrape_interval: 9m
@@ -96,8 +81,7 @@ scrape_configs:
       module: [ping_checks]
     static_configs:
       - targets:
-        - dev2.smtdp.de
-        - s02.smtdpoffice.net
+        - google.com
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
